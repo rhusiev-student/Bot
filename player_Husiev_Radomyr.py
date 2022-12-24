@@ -102,10 +102,12 @@ def parse_figure() -> tuple[int, int, list[tuple[int, int]]]:
         for j, char in enumerate(line):
             if char == "*":
                 figure.append((i, j))
+    height = max([i[0] for i in figure]) + 1
+    width = max([i[1] for i in figure]) + 1
     return height, width, figure
 
 
-def step(player: int, switch: int = False) -> tuple[tuple[int, int], float]:
+def step(player: int, switch: bool = False) -> tuple[tuple[int, int], float]:
     """
     Perform one step of the game.
 
@@ -123,21 +125,25 @@ def step(player: int, switch: int = False) -> tuple[tuple[int, int], float]:
         Number of attempts to made this time to make a move per field length
     """
     debug_info(f"Player {player} is playing")
+    # Get the field size
     field_height, field_width = parse_field_info()
+    # Get the field
     field = parse_field(field_height)
-    if player == 2:
+    # If we're the second player, we need to switch the field upside down
+    # Because the second player is lower in the field and will be going down otherwise
+    if player == 2 and not switch or player == 1 and switch:
         field_for_enumeration = field[::-1]
     else:
         field_for_enumeration = field
-    if switch and player == 1:
+    if player == 2:
         field_for_enumeration = [row[::-1] for row in field_for_enumeration]
     figure_height, figure_width, figure = parse_figure()
     attempts = 0
     for i, line in enumerate(field_for_enumeration):
-        if player == 2:
+        if player == 2 and not switch or player == 1 and switch:
             i = field_height - i - 1
         for j, char in enumerate(line):
-            if switch and player == 1:
+            if player == 2:
                 j = field_width - j - 1
             if not char == PLAYERS[player]:
                 continue
@@ -158,16 +164,15 @@ def step(player: int, switch: int = False) -> tuple[tuple[int, int], float]:
                 for star1 in figure:
                     if (x_place[0] - star1[0], x_place[1] - star1[1]) == temp_move:
                         continue
-                    if (
-                        field[temp_move[0] + star1[0]][temp_move[1] + star1[1]].lower()
-                        in [k.lower() for k in PLAYERS.values()]
-                    ):
+                    if field[temp_move[0] + star1[0]][
+                        temp_move[1] + star1[1]
+                    ].lower() in [k.lower() for k in PLAYERS.values()]:
                         is_good = False
                 if is_good:
                     debug_info(f"Move: {temp_move}")
-                    return temp_move, attempts/field_height
+                    return temp_move, attempts / field_height
     debug_info("Move: 0 0")
-    return (0, 0), attempts/field_height
+    return (0, 0), attempts / field_height
 
 
 def play(player: int):
@@ -179,14 +184,16 @@ def play(player: int):
     player: int
         First or second player is the bot playing
     """
-    to_switch = 0.0
+    to_switch = 0
+    attempts = 0.0
     while True:
-        if to_switch > 1.2:
-            # TODO: switches from time ti time, to circle the enemy
+        if to_switch >= 3 or attempts > 1.5:
             debug_info(f"Switching the side for player {player}")
-            move, to_switch = step(player, switch=True)
+            move, attempts = step(player, switch=True)
+            to_switch = 0
         else:
-            move, to_switch = step(player)
+            move, attempts = step(player, switch=False)
+        to_switch += 1
         print(*move)
 
 
