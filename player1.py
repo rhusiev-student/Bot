@@ -5,17 +5,6 @@
     ...a pretty bad bot to be honest -_-
 """
 
-from logging import DEBUG, debug, getLogger
-
-# We use the debugger to print messages to stderr
-# You cannot use print as you usually do, the vm would intercept it
-# You can hovever do the following:
-#
-# import sys
-# print("HEHEY", file=sys.stderr)
-
-getLogger().setLevel(DEBUG)
-
 
 def parse_field_info():
     """
@@ -29,7 +18,6 @@ def parse_field_info():
     Plateau 15 17:
     """
     l = input()
-    debug(f"Description of the field: {l}")
 
 
 def parse_field(player: int):
@@ -74,12 +62,10 @@ def parse_field(player: int):
     move = None
     for i in range(16):
         l = input()
-        debug(f"Field: {l}")
         if move is None:
             c = l.lower().find("o" if player == 1 else "x")
             if c != -1:
                 move = i - 1, c - 4
-    assert move is not None
     return move
 
 
@@ -98,11 +84,9 @@ def parse_figure():
     ..
     """
     l = input()
-    debug(f"Piece: {l}")
     height = int(l.split()[1])
     for _ in range(height):
         l = input()
-        debug(f"Piece: {l}")
 
 
 def step(player: int):
@@ -138,7 +122,6 @@ def parse_info_about_player():
     $$$ exec p2 : [./player1.py]
     """
     i = input()
-    debug(f"Info about the player: {i}")
     return 1 if "p1 :" in i else 2
 
 
@@ -147,7 +130,7 @@ def main():
     try:
         play(player)
     except EOFError:
-        debug("Cannot get input. Seems that we've lost ):")
+        pass
 
 
 if __name__ == "__main__":
