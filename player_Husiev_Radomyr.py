@@ -22,6 +22,17 @@ def debug_info(text: str):
     info("\x1b[33;20m" + text + "\x1b[0m")
 
 
+def main():
+    """
+    Main function
+    """
+    player = parse_info_about_player()
+    try:
+        play(player)
+    except EOFError:
+        debug("Cannot get input. The bot has lost")
+
+
 def parse_info_about_player():
     """
     This function parses the info about the player
@@ -41,70 +52,26 @@ def parse_info_about_player():
     return 1 if "p1 :" in line else 2
 
 
-def parse_field_info() -> tuple[int, int]:
+def play(player: int):
     """
-    Get information about the field
-
-    Returns
-    -------
-    tuple[int, int]
-        Field size
-    """
-    line = input()
-    debug(f"Description of the field: {line}")
-    field_size = int(line.split()[-2]), int(line.split()[-1][:-1])
-    debug_info(f"Field size: {field_size}")
-    return field_size
-
-
-def parse_field(field_height: int) -> list[str]:
-    """
-    Get information about the field
+    Main game loop
 
     Parameters
     ----------
-    field_height: int
-        Field height
-
-    Returns
-    -------
-    list[str]
-        Field
+    player: int
+        First or second player is the bot playing
     """
-    field = []
-    debug_info("Field:")
-    debug(input())
-    for _ in range(field_height):
-        line = input()
-        debug(f"{line}")
-        line = line[4:]
-        field.append(line)
-    return field
-
-
-def parse_figure() -> tuple[int, int, list[tuple[int, int]]]:
-    """
-    Get a given figure
-
-    Returns
-    -------
-    tuple[int, int, list[tuple[int, int]]]
-        Figure
-    """
-    line = input()
-    height = int(line.split()[1])
-    width = int(line.split()[2][:-1])
-    debug_info(f"Piece {height}x{width}:")
-    figure = []
-    for i in range(height):
-        line = input()
-        debug(f"{line}")
-        for j, char in enumerate(line):
-            if char == "*":
-                figure.append((i, j))
-    height = max([i[0] for i in figure]) + 1
-    width = max([i[1] for i in figure]) + 1
-    return height, width, figure
+    to_switch = 0
+    attempts = 0.0
+    while True:
+        if to_switch >= 7 or attempts > 1.5:
+            debug_info(f"Switching the side for player {player}")
+            move, attempts = step(player, switch=True)
+            to_switch = 0
+        else:
+            move, attempts = step(player, switch=False)
+        to_switch += 1
+        print(*move)
 
 
 def step(player: int, switch: bool = False) -> tuple[tuple[int, int], float]:
@@ -175,37 +142,70 @@ def step(player: int, switch: bool = False) -> tuple[tuple[int, int], float]:
     return (0, 0), attempts / field_height
 
 
-def play(player: int):
+def parse_field_info() -> tuple[int, int]:
     """
-    Main game loop
+    Get information about the field
+
+    Returns
+    -------
+    tuple[int, int]
+        Field size
+    """
+    line = input()
+    debug(f"Description of the field: {line}")
+    field_size = int(line.split()[-2]), int(line.split()[-1][:-1])
+    debug_info(f"Field size: {field_size}")
+    return field_size
+
+
+def parse_field(field_height: int) -> list[str]:
+    """
+    Get information about the field
 
     Parameters
     ----------
-    player: int
-        First or second player is the bot playing
+    field_height: int
+        Field height
+
+    Returns
+    -------
+    list[str]
+        Field
     """
-    to_switch = 0
-    attempts = 0.0
-    while True:
-        if to_switch >= 7 or attempts > 1.5:
-            debug_info(f"Switching the side for player {player}")
-            move, attempts = step(player, switch=True)
-            to_switch = 0
-        else:
-            move, attempts = step(player, switch=False)
-        to_switch += 1
-        print(*move)
+    field = []
+    debug_info("Field:")
+    debug(input())
+    for _ in range(field_height):
+        line = input()
+        debug(f"{line}")
+        line = line[4:]
+        field.append(line)
+    return field
 
 
-def main():
+def parse_figure() -> tuple[int, int, list[tuple[int, int]]]:
     """
-    Main function
+    Get a given figure
+
+    Returns
+    -------
+    tuple[int, int, list[tuple[int, int]]]
+        Figure
     """
-    player = parse_info_about_player()
-    try:
-        play(player)
-    except EOFError:
-        debug("Cannot get input. The bot has lost")
+    line = input()
+    height = int(line.split()[1])
+    width = int(line.split()[2][:-1])
+    debug_info(f"Piece {height}x{width}:")
+    figure = []
+    for i in range(height):
+        line = input()
+        debug(f"{line}")
+        for j, char in enumerate(line):
+            if char == "*":
+                figure.append((i, j))
+    height = max([i[0] for i in figure]) + 1
+    width = max([i[1] for i in figure]) + 1
+    return height, width, figure
 
 
 if __name__ == "__main__":
