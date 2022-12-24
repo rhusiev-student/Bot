@@ -187,7 +187,7 @@ def play(player: int):
     to_switch = 0
     attempts = 0.0
     while True:
-        if to_switch >= 3 or attempts > 1.5:
+        if to_switch >= 7 or attempts > 1.5:
             debug_info(f"Switching the side for player {player}")
             move, attempts = step(player, switch=True)
             to_switch = 0
