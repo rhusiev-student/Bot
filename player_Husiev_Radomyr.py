@@ -4,9 +4,9 @@
 A bot to play the game
 """
 
-from logging import DEBUG, debug, getLogger, info
-
-getLogger().setLevel(DEBUG)
+# from logging import DEBUG, debug, getLogger, info
+# 
+# getLogger().setLevel(DEBUG)
 PLAYERS = {1: "O", 2: "X"}
 
 
@@ -19,7 +19,8 @@ def debug_info(text: str):
     text: str
         Text to output
     """
-    info("\x1b[33;20m" + text + "\x1b[0m")
+    # info("\x1b[33;20m" + text + "\x1b[0m")
+    pass
 
 
 def main():
@@ -30,7 +31,8 @@ def main():
     try:
         play(player)
     except EOFError:
-        debug("Cannot get input. The bot has lost")
+        # debug("Cannot get input. The bot has lost")
+        pass
 
 
 def parse_info_about_player():
@@ -47,8 +49,8 @@ def parse_info_about_player():
         Player number
     """
     line = input()
-    debug(f"Info about the player: {line}")
-    debug_info(f"The bot is player#{1 if 'p1 :' in line else 2}")
+    # debug(f"Info about the player: {line}")
+    # debug_info(f"The bot is player#{1 if 'p1 :' in line else 2}")
     return 1 if "p1 :" in line else 2
 
 
@@ -65,7 +67,7 @@ def play(player: int):
     attempts = 0.0
     while True:
         if to_switch >= 7 or attempts > 1.5:
-            debug_info(f"Switching the side for player {player}")
+            # debug_info(f"Switching the side for player {player}")
             move, attempts = step(player, switch=True)
             to_switch = 0
         else:
@@ -91,7 +93,7 @@ def step(player: int, switch: bool = False) -> tuple[tuple[int, int], float]:
         Move
         Number of attempts to made this time to make a move per field length
     """
-    debug_info(f"Player {player} is playing")
+    # debug_info(f"Player {player} is playing")
     # Get the field size
     field_height, field_width = parse_field_info()
     # Get the field
@@ -136,9 +138,9 @@ def step(player: int, switch: bool = False) -> tuple[tuple[int, int], float]:
                     ].lower() in [k.lower() for k in PLAYERS.values()]:
                         is_good = False
                 if is_good:
-                    debug_info(f"Move: {temp_move}")
+                    # debug_info(f"Move: {temp_move}")
                     return temp_move, attempts / field_height
-    debug_info("Move: 0 0")
+    # debug_info("Move: 0 0")
     return (0, 0), attempts / field_height
 
 
@@ -152,7 +154,7 @@ def parse_field_info() -> tuple[int, int]:
         Field size
     """
     line = input()
-    debug(f"Description of the field: {line}")
+    # debug(f"Description of the field: {line}")
     field_size = int(line.split()[-2]), int(line.split()[-1][:-1])
     debug_info(f"Field size: {field_size}")
     return field_size
@@ -174,10 +176,11 @@ def parse_field(field_height: int) -> list[str]:
     """
     field = []
     debug_info("Field:")
-    debug(input())
+    input()
+    # debug(input())
     for _ in range(field_height):
         line = input()
-        debug(f"{line}")
+        # debug(f"{line}")
         line = line[4:]
         field.append(line)
     return field
@@ -199,7 +202,7 @@ def parse_figure() -> tuple[int, int, list[tuple[int, int]]]:
     figure = []
     for i in range(height):
         line = input()
-        debug(f"{line}")
+        # debug(f"{line}")
         for j, char in enumerate(line):
             if char == "*":
                 figure.append((i, j))
